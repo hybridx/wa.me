@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp Link Generator</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/hybridx/hybridx.github.io/refs/heads/develop/public/favicon.svg">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap');
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Red Hat Text', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #71b7e6, #9b59b6); /* Gradient background */
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
@@ -20,7 +24,7 @@
             background-color: #ffffff;
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             text-align: center;
             width: 100%;
             max-width: 400px;
@@ -29,49 +33,53 @@
         h1 {
             color: #333;
             margin-bottom: 30px;
-            font-size: 1.8em;
+            font-size: 2em;
+            font-weight: 500;
         }
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: left;
         }
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
+            font-weight: 500;
             color: #555;
-            font-size: 0.95em;
+            font-size: 1em;
         }
         input[type="tel"],
         input[type="text"] {
             width: 100%;
             padding: 12px 15px;
-            margin-bottom: 10px;
-            border: 1px solid #cccccc;
+            margin-bottom: 0;
+            border: 1px solid #dddddd;
             border-radius: 5px;
             font-size: 1em;
-            box-sizing: border-box; /* Include padding and border in element's total width and height */
-            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         input[type="tel"]:focus,
         input[type="text"]:focus {
-            border-color: #71b7e6;
+            border-color: #66a6ff;
             outline: none;
-            box-shadow: 0 0 5px rgba(113, 183, 230, 0.5);
+            box-shadow: 0 0 8px rgba(102, 166, 255, 0.3);
         }
         button {
             background-color: #25D366;
             color: white;
-            padding: 12px 25px;
+            padding: 12px 30px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 1.1em;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-            margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+            margin-top: 15px;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
         }
         button:hover {
             background-color: #1DA851;
+            box-shadow: 0 6px 12px rgba(37, 211, 102, 0.3);
         }
          button:active {
             transform: scale(0.98);
@@ -109,10 +117,13 @@
             cursor: pointer;
             font-size: 1em;
              transition: background-color 0.3s ease, transform 0.1s ease;
-             display: none; /* Hide initially */
+             display: none;
+             margin-top: 15px;
+             box-shadow: 0 4px 10px rgba(7, 94, 84, 0.2);
         }
          #copyButton:hover {
             background-color: #054a3d;
+             box-shadow: 0 6px 12px rgba(7, 94, 84, 0.3);
         }
          #copyButton:active {
             transform: scale(0.98);
@@ -126,30 +137,33 @@
             visibility: hidden;
             min-width: 250px;
             margin-left: -125px;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.85);
             color: #fff;
             text-align: center;
             border-radius: 5px;
             padding: 15px;
             position: fixed;
-            z-index: 1;
+            z-index: 1050;
             left: 50%;
             bottom: 30px;
             font-size: 1em;
-            opacity: 0; /* Start invisible */
+            opacity: 0;
             transition: opacity 0.5s, visibility 0.5s;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .toaster.show {
             visibility: visible;
-            opacity: 1; /* Fade in */
+            opacity: 1;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>WhatsApp Link Generator</h1>
+        <div style="margin-bottom: 1.5rem;">
+          <h1 style="margin: 0">WhatsApp Link Generator</h1>
+        <small style="font-size: 0.8rem; color: #666;">by <a href="https://hybridx.github.io" target="_blank" style="color: #666; text-decoration: none;">Hybridx</a> powered by Cursor</small>
+        </div>
         <div class="input-group">
             <label for="mobileNumber">Enter Mobile Number (e.g., 9923123123):</label>
             <input type="tel" id="mobileNumber" placeholder="Enter number">
@@ -169,75 +183,6 @@
     <!-- Toaster -->
     <div id="toaster" class="toaster"></div>
 
-    <script>
-        function generateLink() {
-            const numberInput = document.getElementById('mobileNumber');
-            const waLinkElement = document.getElementById('waLink');
-            const resultDiv = document.getElementById('result');
-            const copyButton = document.getElementById('copyButton');
-            const countryCodeInput = document.getElementById('countryCode');
-
-            // Basic validation: check if the input is not empty
-            if (numberInput.value.trim() === "") {
-                alert("Please enter a mobile number.");
-                resultDiv.classList.add('hidden');
-                copyButton.style.display = 'none'; // Ensure copy button is hidden
-                return;
-            }
-
-            // Clean the input: remove all non-digit characters from the mobile number
-            const cleanedNumber = numberInput.value.replace(/\D/g, '');
-
-            // Get and format the country code
-            let countryCode = countryCodeInput.value.trim();
-            if (countryCode === "") {
-                countryCode = "+91"; // Default to +91 if empty
-            }
-            // Ensure the country code starts with a '+'
-            if (!countryCode.startsWith('+')) {
-                countryCode = '+' + countryCode;
-            }
-
-            // Combine country code and cleaned number
-            const formattedNumber = countryCode + cleanedNumber;
-
-            const waLink = `https://wa.me/${formattedNumber}`;
-
-            waLinkElement.href = waLink;
-            waLinkElement.textContent = waLink;
-
-            // Show the result area and copy button
-            resultDiv.classList.remove('hidden');
-            copyButton.style.display = 'inline-block';
-        }
-
-        function copyLink() {
-            const waLinkElement = document.getElementById('waLink');
-            const textToCopy = waLinkElement.textContent;
-            const toaster = document.getElementById('toaster');
-
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                // Show the toaster
-                toaster.textContent = "Link copied to clipboard!";
-                toaster.className = "toaster show"; // Add the 'show' class
-
-                // Hide the toaster after 3 seconds
-                setTimeout(() => {
-                    toaster.className = toaster.className.replace("show", ""); // Remove the 'show' class
-                }, 3000);
-
-            }).catch(err => {
-                console.error('Failed to copy link: ', err);
-                // You might want to show a different message in the toaster for errors
-                toaster.textContent = "Could not copy link.";
-                 toaster.className = "toaster show"; // Add the 'show' class
-
-                // Hide the toaster after 3 seconds
-                setTimeout(() => {
-                    toaster.className = toaster.className.replace("show", ""); // Remove the 'show' class
-                }, 3000);
-            });
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html> 
